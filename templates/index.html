@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Flask-SocketIO Test</title>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            // Set namespace.
+            // An application can open a connection on multiple namespaces, and
+            // Socket.IO will multiplex all those connections on a single
+            // physical channel. If you don't care about multiple channels, you
+            // can set the namespace to an empty string.
+            namespace = '';
+
+            // Connect to the Socket.IO server.
+            // The connection URL has the following format:
+            //     http[s]://<domain>:<port>[/<namespace>]
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+
+            // Event handler for server sent data.
+            // The callback function is invoked whenever the server emits data
+            // to the client. The data is then displayed in the "Received"
+            // section of the page.
+            socket.on('server_message', function(msg) {
+                $('#log').append('<br>' + $('<div/>').text(msg.data).html());
+            });
+
+            // Handlers for the form(s) in the page.
+            // These accept data from the user and send it to the server in a
+            // variety of ways
+            $('form#input').submit(function(event) {
+                socket.emit('input',
+                    {"string" : $('#input_string').val(),
+                     "int" : $('#input_int').val()});                
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Flask template app</h1>
+
+    <h2>Input:</h2>
+    <form id="input" method="POST" action='#'>
+        <input type="text" name="input_string" id="input_string" placeholder="Text string">
+        <input type="text" name="input_int" id="input_int" placeholder="Integer">
+        <input type="submit" value="Submit">
+    </form>
+
+    <div id="log"></div>
+</body>
+</html>
